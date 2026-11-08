@@ -1,7 +1,5 @@
 package com.example.vbt.algorithm.detection.realtime;
 
-import android.view.Gravity;
-
 import com.example.vbt.algorithm.config.LiftParameters;
 import com.example.vbt.algorithm.detection.EpisodeAnalyzer;
 import com.example.vbt.algorithm.model.ImuSample;
@@ -232,7 +230,7 @@ public abstract class AbstractStreamingStrategy implements StreamingRepDetection
         et[en] = t;
         enet[en] = net;
         egyro[en] = gyroMag;
-        gap++;
+        en++;
     }
 
     private void abortEpisode(String reason){

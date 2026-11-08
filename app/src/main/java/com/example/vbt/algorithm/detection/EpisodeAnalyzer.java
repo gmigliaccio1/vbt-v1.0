@@ -49,7 +49,7 @@ public class EpisodeAnalyzer {
             i--;
         }
         int j = peak;
-        while(j > v.length - 1 && v[j] > 0){
+        while(j < v.length - 1 && v[j] > 0){
             j++;
         }
         return new int[]{i, j};

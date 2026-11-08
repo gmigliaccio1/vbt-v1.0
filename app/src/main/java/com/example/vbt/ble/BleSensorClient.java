@@ -36,7 +36,7 @@ public final class BleSensorClient {
     private volatile State state = State.DISCONNECTED;
     private BluetoothLeScanner scanner;
     private BluetoothGatt gatt;
-    private boolean userRequestDisconnect;
+    private boolean userRequestedDisconnect;
     public BleSensorClient(Context context, Listener listener){
         this.context = context.getApplicationContext();
         this.listener = listener;
@@ -62,11 +62,16 @@ public final class BleSensorClient {
         }else{
             adapter = manager.getAdapter();
         }
-        if(adapter == null || !adapter.isEnabled()){
+        if (adapter == null || !adapter.isEnabled()) {
+            publish(State.DISCONNECTED, "Turn Bluetooth on");
+            return;
+        }
+        scanner = adapter.getBluetoothLeScanner();
+        if (scanner == null) {
             publish(State.DISCONNECTED, "BLE scanner not available");
             return;
         }
-        userRequestDisconnect = false;
+        userRequestedDisconnect = false;
         ScanFilter filter = new ScanFilter.Builder()
                 .setServiceUuid(new ParcelUuid(SensorProtocol.SERVICE_UUID))
                 .build();
@@ -79,7 +84,7 @@ public final class BleSensorClient {
     }
 
     public void disconnect(){
-        userRequestDisconnect = true;
+        userRequestedDisconnect = true;
         stopScan();
         if(gatt != null){
             gatt.disconnect();
@@ -198,7 +203,7 @@ public final class BleSensorClient {
         main.post(new Runnable() {
             @Override
             public void run() {
-                listener.onStateChanged(newState, detail);
+                listener.onStateChange(newState, detail);
             }
         });
     }

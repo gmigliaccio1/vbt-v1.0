@@ -1,7 +1,5 @@
 package com.example.vbt.recording;
 
-import android.credentials.CredentialOption;
-
 import com.example.vbt.algorithm.model.SignalData;
 
 import java.io.BufferedReader;
