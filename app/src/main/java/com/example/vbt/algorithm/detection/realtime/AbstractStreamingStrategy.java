@@ -7,7 +7,6 @@ import com.example.vbt.algorithm.model.Lift;
 import com.example.vbt.algorithm.model.Rep;
 import com.example.vbt.algorithm.signal.GravityTracker;
 
-import java.lang.annotation.Inherited;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.List;

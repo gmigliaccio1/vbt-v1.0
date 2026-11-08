@@ -118,7 +118,7 @@ public final class TrackerSession implements BleSensorClient.Listener, RepListen
 
 
     @Override
-    public void onStateChanged(final BleSensorClient.State state, final String detail) {
+    public void onStateChange(final BleSensorClient.State state, final String detail) {
         worker.execute(new Runnable() {
             @Override
             public void run() {
