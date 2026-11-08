@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Velocity Tracker</string>
+    <string name="lift_bench">Bench</string>
+    <string name="lift_squat">Squat</string>
+    <string name="connect">Connect sensor</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="cancel_scan">Cancel</string>
+    <string name="not_connected">Not connected</string>
+    <string name="no_reps_yet">No reps yet</string>
+    <string name="new_set">New set</string>
+    <string name="status_calibrating">Calibrating: keep the bar still on the rack</string>
+    <string name="status_ready">Ready</string>
+    <string name="status_moving">Moving...</string>
+    <string name="permission_denied">Bluetooth permission is needed to find the sensor</string>
 </resources>
