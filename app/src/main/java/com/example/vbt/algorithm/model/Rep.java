@@ -7,15 +7,17 @@ public final class Rep {
     public final double meanVelocity;
     public final double peakVelocity;
     public final double meanGyro;
+    public final double romM;
 
     public Rep(int number, double startS, double endS, double meanVelocity,
-                double peakVelocity, double meanGyro){
+                double peakVelocity, double meanGyro, double romM){
         this.number = number;
         this.startS = startS;
         this.endS = endS;
         this.meanVelocity = meanVelocity;
         this.peakVelocity = peakVelocity;
         this.meanGyro = meanGyro;
+        this.romM = romM;
     }
 
     public double durationS(){
@@ -23,6 +25,6 @@ public final class Rep {
     }
 
     public Rep withNumber(int newNumber){
-        return new Rep(newNumber, startS, endS, meanVelocity, peakVelocity, meanGyro);
+        return new Rep(newNumber, startS, endS, meanVelocity, peakVelocity, meanGyro, romM);
     }
 }

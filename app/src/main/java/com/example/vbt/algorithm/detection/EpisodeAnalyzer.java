@@ -60,7 +60,11 @@ public class EpisodeAnalyzer {
         int count = 0;
         double peak = Double.NEGATIVE_INFINITY;
         double gyroSum = 0.0;
+        double rom = 0.0;
         for(int k = s; k<= e; k++){
+            if(k > s){
+                rom += 0.5 * (v[k] + v[k - 1]) * (t[k]  - t[k - 1]);
+            }
             if(v[k] > 0){
                 sum += v[k];
                 count++;
@@ -74,6 +78,6 @@ public class EpisodeAnalyzer {
         }else{
             mean = 0.0;
         }
-        return new Rep(number, t[s], t[e], mean, peak, gyroSum / (e - s + 1));
+        return new Rep(number, t[s], t[e], mean, peak, gyroSum / (e - s + 1), rom);
     }
 }

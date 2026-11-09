@@ -44,7 +44,8 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
                         if (BlePermissions.hasAll(this)) {
                             session.connect();
                         } else {
-                            Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, R.string.permission_denied,
+                                    Toast.LENGTH_LONG).show();
                         }
                     });
 
@@ -53,7 +54,9 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main),
+                (v,
+                 insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -103,7 +106,14 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
     }
 
     private Lift selectedLift(RadioGroup group) {
-        return group.getCheckedRadioButtonId() == R.id.radioSquat ? Lift.SQUAT : Lift.BENCH;
+        int id = group.getCheckedRadioButtonId();
+        if (id == R.id.radioSquat) {
+            return Lift.SQUAT;
+        }
+        if (id == R.id.radioDeadlift) {
+            return Lift.DEADLIFT;
+        }
+        return Lift.BENCH;
     }
 
     private void clearSetDisplay() {
@@ -113,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
         tvLastRep.setText(R.string.no_reps_yet);
         tvSummary.setText("");
     }
+
 
     @Override
     public void onConnectionChanged(BleSensorClient.State state, String detail) {
@@ -151,11 +162,14 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
     public void onRep(Rep rep, double velocityLossPercent) {
         repCount = rep.number;
         bestMean = Math.max(bestMean, rep.meanVelocity);
-        tvLastRep.setText(String.format(Locale.US, "%.2f m/s", rep.meanVelocity));
+        tvLastRep.setText(String.format(Locale.US, "%.2f m/s   ROM %.0f cm",
+                rep.meanVelocity, rep.romM * 100));
         tvSummary.setText(String.format(Locale.US, "Rep %d   best %.2f   loss %.0f%%",
                 repCount, bestMean, velocityLossPercent));
-        repsAdapter.insert(String.format(Locale.US, "Rep %d   mean %.2f   peak %.2f m/s   %.1f s",
-                rep.number, rep.meanVelocity, rep.peakVelocity, rep.durationS()), 0);
+        repsAdapter.insert(String.format(Locale.US, "Rep %d   mean %.2f   peak %.2f m/s " +
+                        "  ROM %.0f cm   %.1f s",
+                rep.number, rep.meanVelocity, rep.peakVelocity, rep.romM * 100,
+                rep.durationS()), 0);
     }
 
     @Override

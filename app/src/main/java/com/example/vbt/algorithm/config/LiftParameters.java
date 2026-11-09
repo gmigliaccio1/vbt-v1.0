@@ -15,6 +15,11 @@ public final class LiftParameters {
     public final double calibStillAccStd;
     public final double maxEpisodeS;
     public final double maxGapS;
+    public final double minRomM;
+    public final double maxRomM;
+    public final double repEndFraction;
+    public final double maxRepGyroDps;
+    public final double cycleOffsetMaxS;
 
     private LiftParameters(Builder b) {
         this.calibrationWindowS = b.calibrationWindowS;
@@ -30,6 +35,11 @@ public final class LiftParameters {
         this.calibStillAccStd = b.calibStillAccStd;
         this.maxEpisodeS = b.maxEpisodeS;
         this.maxGapS = b.maxGapS;
+        this.minRomM = b.minRomM;
+        this.maxRomM = b.maxRomM;
+        this.repEndFraction = b.repEndFraction;
+        this.maxRepGyroDps = b.maxRepGyroDps;
+        this.cycleOffsetMaxS = b.cycleOffsetMaxS;
     }
 
     public static Builder builder() {
@@ -50,6 +60,11 @@ public final class LiftParameters {
         private double calibStillAccStd = 0.005;
         private double maxEpisodeS = 90.0;
         private double maxGapS = 0.1;
+        private double minRomM = 0.10;
+        private double maxRomM = 1.20;
+        private double repEndFraction = 0.15;
+        private double maxRepGyroDps = 100.0;
+        private double cycleOffsetMaxS = 0.0;
 
         public Builder calibration(double windowS, double searchS) {
             this.calibrationWindowS = windowS;
@@ -90,6 +105,27 @@ public final class LiftParameters {
             this.calibStillAccStd = calibStillAccStd;
             this.maxEpisodeS = maxEpisodeS;
             this.maxGapS = maxGapS;
+            return this;
+        }
+
+        public Builder rom(double minM, double maxM){
+            this.minRomM = minM;
+            this.maxRomM = maxM;
+            return this;
+        }
+
+        public Builder repEndFraction(double v){
+            this.repEndFraction = v;
+            return this;
+        }
+
+        public Builder cycleOffsetMaxS(double s){
+            this.cycleOffsetMaxS = s;
+            return this;
+        }
+
+        public Builder maxRepGyro(double dps){
+            this.maxRepGyroDps = dps;
             return this;
         }
 

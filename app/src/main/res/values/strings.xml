@@ -2,6 +2,7 @@
     <string name="app_name">Velocity Tracker</string>
     <string name="lift_bench">Bench</string>
     <string name="lift_squat">Squat</string>
+    <string name="lift_deadlift">Deadlift</string>
     <string name="connect">Connect sensor</string>
     <string name="disconnect">Disconnect</string>
     <string name="cancel_scan">Cancel</string>
