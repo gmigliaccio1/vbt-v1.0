@@ -1,8 +1,7 @@
 package com.example.vbt.algorithm.detection.continuous;
 
-import com.example.vbt.R;
+
 import com.example.vbt.algorithm.config.LiftParameters;
-import com.example.vbt.algorithm.model.Lift;
 import com.example.vbt.algorithm.model.Rep;
 
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ public final class ContinuousRepAnalyzer {
     static final double KNOT_GYRO_MEAN = 25.0;
     static final double SMOOTH_S = 0.15;
     static final double PEAK_WINDOW_S = 6.0;
-    static final double END_GUARD_S = 6.0;
+    static final double END_GUARD_S = 0.1;
 
     private ContinuousRepAnalyzer(){
 
@@ -105,7 +104,7 @@ public final class ContinuousRepAnalyzer {
             return null;
         }
         return new Rep(0, t[l], t[r], rom / dur, peak,
-                gyroSum / (r - 1), rom);
+                gyroSum / (r - l), rom);
     }
 
     static double[] driftBaseLine(double[] t, double[] net, double[] gyro, double[] raw, int n,
@@ -182,7 +181,7 @@ public final class ContinuousRepAnalyzer {
         }
         int h = w / 2;
         for(int i = 0; i < n; i++){
-            int a = Math.min(0, i - h);
+            int a = Math.max(0, i - h);
             int b = Math.min(n, i + h + 1);
             out[i] = (cs[b] - cs[a]) / (b - a);
         }

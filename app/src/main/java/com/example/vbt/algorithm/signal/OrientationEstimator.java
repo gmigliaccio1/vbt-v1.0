@@ -4,7 +4,7 @@ import com.example.vbt.algorithm.model.SignalData;
 
 public final class OrientationEstimator {
     public static final double G = GravityTracker.G;
-    private static final double MAX_DT = 0.02;
+    private static final double MAX_DT = 0.06;
 
     private OrientationEstimator(){
     }

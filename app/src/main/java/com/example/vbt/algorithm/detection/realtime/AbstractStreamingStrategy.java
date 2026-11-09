@@ -92,7 +92,7 @@ public abstract class AbstractStreamingStrategy implements StreamingRepDetection
         }else{
             gap = 0.0;
         }
-        double dt = Math.min(gap, 0.02);
+        double dt = Math.min(gap, 0.06);
         prevT = s.t;
         havePrev = true;
         if (status == RepListener.Status.CALIBRATING){

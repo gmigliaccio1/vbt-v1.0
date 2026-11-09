@@ -236,7 +236,7 @@ public final class ContinuousStreamingStrategy implements StreamingRepDetectionS
         if(n % 2 == 1){
             return c[n / 2];
         }else{
-            return 0.5 * (c[n / 2 - 1] * c[n / 2]);
+            return 0.5 * (c[n / 2 - 1] + c[n / 2]);
         }
     }
 }

@@ -64,8 +64,8 @@ public class VelocityIntegrator {
                 double diff = t[idx] - t[idx - 1];
                 if(diff < 0.0){
                     dt = 0.0;
-                } else if (diff > 0.02) {
-                    dt = 0.02;
+                } else if (diff > 0.06) {
+                    dt = 0.06;
                 }else{
                     dt = diff;
                 }
