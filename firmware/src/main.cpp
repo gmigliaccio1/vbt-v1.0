@@ -29,15 +29,16 @@ static const char* DATA_UUID = "7a0f0002-5b1e-4c52-9a0b-6f7c0e3b5a10";
 constexpr size_t SAMPLES_PER_PACKET = 8;
 NimBLEServer* bleServer = nullptr;
 NimBLECharacteristic* dataChar = nullptr;
+NimBLECharacteristic* batteryChar = nullptr;
 constexpr size_t PACKET_BYTES = 2 + SAMPLES_PER_PACKET * 16;
 struct Packet {
   uint8_t len;
   uint8_t data[PACKET_BYTES];
 };
-Packet pkt;                          // packet being filled by the sampling loop
+Packet pkt;                      
 uint8_t pktSeq = 0;
 size_t pktCount = 0;
-QueueHandle_t txQueue = nullptr;     // full packets waiting to be sent by txTask
+QueueHandle_t txQueue = nullptr;    
 uint32_t droppedPackets = 0;
 
 Sample* buf = nullptr;
@@ -104,7 +105,6 @@ void showReady(){
   show("READY", "press btn", batLine);
 }
 
-// Sampling loop only copies the sample; the slow BLE notify() runs in txTask so it never stalls sampling.
 void streamSample(const Sample& s){
   memcpy(pkt.data + 2 + pktCount * sizeof(Sample), &s, sizeof(Sample));
   if(++pktCount == SAMPLES_PER_PACKET){
@@ -112,7 +112,7 @@ void streamSample(const Sample& s){
     pkt.data[1] = (uint8_t)pktCount;
     pkt.len = (uint8_t)(2 + pktCount * sizeof(Sample));
     if(xQueueSend(txQueue, &pkt, 0) != pdTRUE){
-      droppedPackets++;               // queue full: the app sees the gap in the sequence number
+      droppedPackets++;               
     }
     pktCount = 0;
   }
@@ -154,13 +154,32 @@ void setupBle(){
   NimBLEService* svc = bleServer->createService(SVC_UUID);
   dataChar = svc->createCharacteristic(DATA_UUID, NIMBLE_PROPERTY::NOTIFY);
   svc->start();
+  NimBLEService* bat = bleServer->createService("180F");
+  batteryChar = bat->createCharacteristic("2a19", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+  uint8_t level = (uint8_t)constrain(M5.Power.getBatteryLevel(), 0, 100);
+  batteryChar->setValue(&level,1);
+  bat->start();
   NimBLEAdvertising* adv = NimBLEDevice::getAdvertising();
   adv->addServiceUUID(SVC_UUID);
   adv->setScanResponse(true);
   adv->start();
 }
 
+void updateBattery(){
+  static uint32_t lastUpdate = 0;
+  if(millis() - lastUpdate < 30000 && lastUpdate != 0){
+    return;
+  }
+  lastUpdate = millis();
+  uint8_t level = (uint8_t)constrain(M5.Power.getBatteryLevel(), 0, 100);
+  batteryChar->setValue(&level, 1);
+  if(batteryChar->getSubscribedCount() > 0){
+    batteryChar->notify();
+  }
+}
+
 void pollBle(){
+  updateBattery();
   bool subscribed = dataChar && dataChar->getSubscribedCount() > 0;
   if(state == State::IDLE && subscribed){
     startStreaming();
@@ -260,7 +279,7 @@ void setup() {
   buf = (Sample*)ps_malloc(MAX_SAMPLES * sizeof(Sample));
   if (!buf) { show("NO PSRAM"); while (true) delay(1000); }
   if (!LittleFS.begin(true)) { show("FS ERROR"); while (true) delay(1000); }
-  txQueue = xQueueCreate(16, sizeof(Packet));   // 16 packets = 128 samples = 0.64 s of buffer
+  txQueue = xQueueCreate(16, sizeof(Packet)); 
   xTaskCreatePinnedToCore(txTask, "ble_tx", 4096, nullptr, 1, nullptr, 0);
   setupBle();
   showReady();
