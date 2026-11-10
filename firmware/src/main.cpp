@@ -3,6 +3,9 @@
 #include <vector>
 #include <Arduino.h>
 #include <NimBLEDevice.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
+#include <freertos/task.h>
 
 constexpr uint32_t SAMPLE_PERIOD_US = 5000;
 constexpr uint32_t MAX_SECONDS = 120;
@@ -26,9 +29,16 @@ static const char* DATA_UUID = "7a0f0002-5b1e-4c52-9a0b-6f7c0e3b5a10";
 constexpr size_t SAMPLES_PER_PACKET = 8;
 NimBLEServer* bleServer = nullptr;
 NimBLECharacteristic* dataChar = nullptr;
-uint8_t pkt[2 + SAMPLES_PER_PACKET * 16];
+constexpr size_t PACKET_BYTES = 2 + SAMPLES_PER_PACKET * 16;
+struct Packet {
+  uint8_t len;
+  uint8_t data[PACKET_BYTES];
+};
+Packet pkt;                          // packet being filled by the sampling loop
 uint8_t pktSeq = 0;
 size_t pktCount = 0;
+QueueHandle_t txQueue = nullptr;     // full packets waiting to be sent by txTask
+uint32_t droppedPackets = 0;
 
 Sample* buf = nullptr;
 size_t count = 0;
@@ -94,20 +104,37 @@ void showReady(){
   show("READY", "press btn", batLine);
 }
 
+// Sampling loop only copies the sample; the slow BLE notify() runs in txTask so it never stalls sampling.
 void streamSample(const Sample& s){
-  memcpy(pkt + 2 + pktCount * sizeof(Sample), &s, sizeof(Sample));
+  memcpy(pkt.data + 2 + pktCount * sizeof(Sample), &s, sizeof(Sample));
   if(++pktCount == SAMPLES_PER_PACKET){
-    pkt[0] = pktSeq++;
-    pkt[1] = (uint8_t)pktCount;
-    dataChar->setValue(pkt, 2 + pktCount * sizeof(Sample));
-    dataChar->notify();         
+    pkt.data[0] = pktSeq++;
+    pkt.data[1] = (uint8_t)pktCount;
+    pkt.len = (uint8_t)(2 + pktCount * sizeof(Sample));
+    if(xQueueSend(txQueue, &pkt, 0) != pdTRUE){
+      droppedPackets++;               // queue full: the app sees the gap in the sequence number
+    }
     pktCount = 0;
   }
 }
 
+void txTask(void*){
+  Packet p;
+  for(;;){
+    if(xQueueReceive(txQueue, &p, portMAX_DELAY) == pdTRUE){
+      if(state == State::STREAMING && dataChar){
+        dataChar->setValue(p.data, p.len);
+        dataChar->notify();
+      }
+    }
+  }
+}
+
 void startStreaming(){
+  xQueueReset(txQueue);
   pktCount = 0;
   pktSeq = 0;
+  droppedPackets = 0;
   lateCount = 0;
   t0 = micros();                
   nextTick = t0;
@@ -233,6 +260,8 @@ void setup() {
   buf = (Sample*)ps_malloc(MAX_SAMPLES * sizeof(Sample));
   if (!buf) { show("NO PSRAM"); while (true) delay(1000); }
   if (!LittleFS.begin(true)) { show("FS ERROR"); while (true) delay(1000); }
+  txQueue = xQueueCreate(16, sizeof(Packet));   // 16 packets = 128 samples = 0.64 s of buffer
+  xTaskCreatePinnedToCore(txTask, "ble_tx", 4096, nullptr, 1, nullptr, 0);
   setupBle();
   showReady();
 }
