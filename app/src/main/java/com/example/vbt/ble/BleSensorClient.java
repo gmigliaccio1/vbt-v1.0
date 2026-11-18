@@ -216,23 +216,23 @@ public final class BleSensorClient {
         public void onCharacteristicChanged(BluetoothGatt g, BluetoothGattCharacteristic c) {
             handleValue(c, c.getValue());
         }
+
+        @Override
+        public void onCharacteristicRead(BluetoothGatt g, BluetoothGattCharacteristic c, byte[] value,
+                                         int status){
+            if(status == BluetoothGatt.GATT_SUCCESS){
+                handleValue(c, value);
+            }
+        }
+
+        @SuppressWarnings("deprecation")
+        @Override
+        public void onCharacteristicRead(BluetoothGatt g, BluetoothGattCharacteristic c, int status){
+            if(status == BluetoothGatt.GATT_SUCCESS){
+                handleValue(c, c.getValue());
+            }
+        }
     };
-
-    @Override
-    public void onCharacteristicRead(BluetoothGatt g, BluetoothGattCharacteristic c, byte[] value,
-                                     int status){
-        if(status == BluetoothGatt.GATT_SUCCESS){
-            handleValue(c, value);
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void onCharacteristicRead(BluetoothGatt g, BluetoothGattCharacteristic c, int status){
-        if(status == BluetoothGatt.GATT_SUCCESS){
-            handleValue(c, c.getValue());
-        }
-    }
 
     private void handleValue(BluetoothGattCharacteristic c, byte[] value){
         if(value == null || value.length == 0){

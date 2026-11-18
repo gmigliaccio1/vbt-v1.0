@@ -1,7 +1,5 @@
 package com.example.vbt.algorithm.history;
 
-import android.icu.text.UFormat;
-
 import com.example.vbt.algorithm.model.Lift;
 import com.example.vbt.algorithm.model.Rep;
 
@@ -13,8 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import kotlin.text.RegexOption;
 
 public final class SetHistoryStore  {
     private final File file;
