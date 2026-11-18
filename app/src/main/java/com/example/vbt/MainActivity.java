@@ -222,6 +222,14 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
         etAlert.setText(String.valueOf(p.getInt(PREF_ALERT, DEFAULT_ALERT_PERCENT)));
     }
 
+    private void savePreferences(){
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                .putString(PREF_LIFT, selectedLift().name())
+                .putString(PREF_LOAD, textOf(etLoad))
+                .putInt(PREF_ALERT, alertPercent())
+                .apply();
+    }
+
     private void saveSetIfAny(Lift lift){
         if(setReps.isEmpty()){
             return;

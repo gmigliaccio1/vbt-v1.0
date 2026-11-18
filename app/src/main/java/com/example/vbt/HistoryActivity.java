@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.vbt.algorithm.history.HistoryStorage;
 import com.example.vbt.algorithm.history.SavedSet;
+import com.example.vbt.algorithm.history.SetFormat;
 import com.example.vbt.algorithm.history.SetHistoryStore;
 
 import java.io.IOException;
