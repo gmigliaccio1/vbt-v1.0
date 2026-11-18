@@ -28,6 +28,7 @@ public final class BleSensorClient {
     public interface Listener{
         void onStateChange(State state, String detail);
         void onData(byte[] packet);
+        void onBattery(int percent);
     }
     private static final long SCAN_TIMEOUT_MS = 15_000;
     private final Context context;
@@ -43,6 +44,7 @@ public final class BleSensorClient {
     }
 
     public State getState(){
+
         return state;
     }
 
@@ -126,7 +128,7 @@ public final class BleSensorClient {
             try {
                 scanner.stopScan(scanCallback);
             } catch (IllegalStateException ignored) {
-                // Bluetooth was switched off meanwhile
+
             }
         }
     }
@@ -141,8 +143,12 @@ public final class BleSensorClient {
             } else {
                 g.close();
                 gatt = null;
-                String why = userRequestedDisconnect ? "Disconnected"
-                        : "Connection lost (status " + status + ")";
+                String why;
+                if(userRequestedDisconnect){
+                    why = "Disconnected";
+                }else{
+                    why = "Connection lost(status " + status + ")";
+                }
                 publish(State.DISCONNECTED, why);
             }
         }
@@ -155,8 +161,18 @@ public final class BleSensorClient {
         @Override
         public void onServicesDiscovered(BluetoothGatt g, int status) {
             BluetoothGattService service = g.getService(SensorProtocol.SERVICE_UUID);
-            BluetoothGattCharacteristic data = service == null ? null : service.getCharacteristic(SensorProtocol.DATA_UUID);
-            BluetoothGattDescriptor cccd = data == null ? null : data.getDescriptor(SensorProtocol.CCCD_UUID);
+            BluetoothGattCharacteristic data;
+            if(service == null){
+                data = null;
+            }else{
+                data = service.getCharacteristic(SensorProtocol.DATA_UUID);
+            }
+            BluetoothGattDescriptor cccd;
+            if(data == null){
+                cccd = null;
+            }else{
+                cccd = data.getDescriptor(SensorProtocol.CCCD_UUID);
+            }
             if (status != BluetoothGatt.GATT_SUCCESS || cccd == null) {
                 publish(State.CONNECTING, "Sensor service not found");
                 g.disconnect();
@@ -174,8 +190,14 @@ public final class BleSensorClient {
         @Override
         public void onDescriptorWrite(BluetoothGatt g, BluetoothGattDescriptor descriptor,
                                       int status) {
+            BluetoothGattCharacteristic owner = descriptor.getCharacteristic();
+            if(SensorProtocol.BATTERY_LEVEL_UUID.equals(owner.getUuid())){
+                g.readCharacteristic(owner);
+                return;
+            }
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 publish(State.CONNECTED, "Streaming");
+                enableBattery(g);
             } else {
                 publish(State.CONNECTING, "Could not enable notifications (status "
                         + status + ")");
@@ -183,20 +205,70 @@ public final class BleSensorClient {
             }
         }
 
-        // Android 13+ calls this overload ...
         @Override
         public void onCharacteristicChanged(BluetoothGatt g, BluetoothGattCharacteristic c,
                                             byte[] value) {
-            listener.onData(value);
+            handleValue(c, value);
         }
 
-        // ... older versions call this one.
         @SuppressWarnings("deprecation")
         @Override
         public void onCharacteristicChanged(BluetoothGatt g, BluetoothGattCharacteristic c) {
-            listener.onData(c.getValue());
+            handleValue(c, c.getValue());
         }
     };
+
+    @Override
+    public void onCharacteristicRead(BluetoothGatt g, BluetoothGattCharacteristic c, byte[] value,
+                                     int status){
+        if(status == BluetoothGatt.GATT_SUCCESS){
+            handleValue(c, value);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onCharacteristicRead(BluetoothGatt g, BluetoothGattCharacteristic c, int status){
+        if(status == BluetoothGatt.GATT_SUCCESS){
+            handleValue(c, c.getValue());
+        }
+    }
+
+    private void handleValue(BluetoothGattCharacteristic c, byte[] value){
+        if(value == null || value.length == 0){
+            return;
+        }
+        if(SensorProtocol.BATTERY_LEVEL_UUID.equals(c.getUuid())){
+            listener.onBattery(value[0] & 0xFF);
+        }else{
+            listener.onData(value);
+        }
+    }
+
+    private void enableBattery(BluetoothGatt g){
+        BluetoothGattService service = g.getService(SensorProtocol.BATTERY_SERVICE_UUID);
+        BluetoothGattCharacteristic level;
+        if(service == null){
+            level = null;
+        }else{
+            level = service.getCharacteristic(SensorProtocol.BATTERY_LEVEL_UUID);
+        }
+        if(level == null){
+            return;
+        }
+        g.setCharacteristicNotification(level, true);
+        BluetoothGattDescriptor cccd = level.getDescriptor(SensorProtocol.CCCD_UUID);
+        if(cccd == null){
+            g.readCharacteristic(level);
+            return;
+        }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            g.writeDescriptor(cccd, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+        }else{
+            cccd.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            g.writeDescriptor(cccd);
+        }
+    }
 
     private void publish(final State newState, final String detail) {
         state = newState;

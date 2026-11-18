@@ -11,7 +11,7 @@ public enum Lift {
         this.displayName = displayName;
     }
 
-    String getDisplayName() {
+    public String getDisplayName() {
         return displayName;
     }
 }

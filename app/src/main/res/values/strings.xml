@@ -13,4 +13,22 @@
     <string name="status_ready">Ready</string>
     <string name="status_moving">Moving...</string>
     <string name="permission_denied">Bluetooth permission is needed to find the sensor</string>
+    <string name="dash">—</string>
+    <string name="unit_mean">m/s mean velocity</string>
+    <string name="hint_load">Load (kg)</string>
+    <string name="hint_alert">Stop at loss (%)</string>
+    <string name="col_rep">Rep</string>
+    <string name="col_mean">Mean</string>
+    <string name="col_peak">Peak</string>
+    <string name="col_rom">ROM</string>
+    <string name="col_loss">Loss</string>
+    <string name="history">History</string>
+    <string name="history_hint">Tap a set to see its reps, long-press to delete it.</string>
+    <string name="history_empty">No saved sets yet. Press New set after a set to save it.</string>
+    <string name="set_saved">Set saved</string>
+    <string name="set_not_saved">Could not save the set</string>
+    <string name="delete_set_title">Delete this set?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
 </resources>

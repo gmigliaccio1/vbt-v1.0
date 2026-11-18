@@ -32,14 +32,11 @@ public final class TrackerSession implements BleSensorClient.Listener, RepListen
 
     public interface Listener {
         void onConnectionChanged(BleSensorClient.State state, String detail);
-
         void onStatusChanged(RepListener.Status status);
-
         void onRep(Rep rep, double velocityLossPercent);
-
         void onEpisodeSkipped(String reason);
-
         void onLogFile(String path);
+        void onBattery(int percent);
     }
 
     private final Context context;
@@ -145,6 +142,15 @@ public final class TrackerSession implements BleSensorClient.Listener, RepListen
         });
     }
 
+    @Override
+    public void onBattery(final int percent){
+        main.post(new Runnable() {
+            @Override
+            public void run() {
+                ui.onBattery(percent);
+            }
+        });
+    }
 
     @Override
     public void onStatusChanged(final RepListener.Status status) {

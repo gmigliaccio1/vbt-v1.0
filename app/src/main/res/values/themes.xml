@@ -6,4 +6,13 @@
     </style>
 
     <style name="Theme.VelocityTracker" parent="Base.Theme.VelocityTracker" />
+
+    <!-- One cell of the rep table (header row and rep rows use the same widths). -->
+    <style name="RepCell">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>

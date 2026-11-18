@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
+
+    <TextView
+        android:id="@+id/tvRepNo"
+        style="@style/RepCell"
+        android:layout_weight="0.7" />
+
+    <TextView
+        android:id="@+id/tvRepMean"
+        style="@style/RepCell"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvRepPeak"
+        style="@style/RepCell" />
+
+    <TextView
+        android:id="@+id/tvRepRom"
+        style="@style/RepCell" />
+
+    <TextView
+        android:id="@+id/tvRepLoss"
+        style="@style/RepCell" />
+</LinearLayout>
