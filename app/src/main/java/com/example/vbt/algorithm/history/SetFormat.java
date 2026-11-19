@@ -31,7 +31,7 @@ public final class SetFormat {
             Rep r = set.reps.get(i);
             sb.append(String.format(Locale.US, "Rep %d  mean %.2f m/s  " +
                             " peak %.2f m/s ROM %.0f cm  loss %.0f%%%n",
-                    r.number, r.meanVelocity, r.romM * 100, loss[i]));
+                    r.number, r.meanVelocity, r.peakVelocity, r.romM * 100, loss[i]));
         }
         return sb.toString();
     }
