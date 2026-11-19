@@ -40,6 +40,7 @@ uint8_t pktSeq = 0;
 size_t pktCount = 0;
 QueueHandle_t txQueue = nullptr;    
 uint32_t droppedPackets = 0;
+volatile bool batteryNotifyPending = false;
 
 Sample* buf = nullptr;
 size_t count = 0;
@@ -121,10 +122,16 @@ void streamSample(const Sample& s){
 void txTask(void*){
   Packet p;
   for(;;){
-    if(xQueueReceive(txQueue, &p, portMAX_DELAY) == pdTRUE){
+    if(xQueueReceive(txQueue, &p, pdMS_TO_TICKS(100)) == pdTRUE){
       if(state == State::STREAMING && dataChar){
         dataChar->setValue(p.data, p.len);
         dataChar->notify();
+      }
+    }
+    if(batteryNotifyPending){
+      batteryNotifyPending = false;
+      if(batteryChar && batteryChar->getSubscribedCount() > 0){
+        batteryChar->notify();
       }
     }
   }
@@ -173,9 +180,7 @@ void updateBattery(){
   lastUpdate = millis();
   uint8_t level = (uint8_t)constrain(M5.Power.getBatteryLevel(), 0, 100);
   batteryChar->setValue(&level, 1);
-  if(batteryChar->getSubscribedCount() > 0){
-    batteryChar->notify();
-  }
+  batteryNotifyPending = true;
 }
 
 void pollBle(){
@@ -280,7 +285,7 @@ void setup() {
   if (!buf) { show("NO PSRAM"); while (true) delay(1000); }
   if (!LittleFS.begin(true)) { show("FS ERROR"); while (true) delay(1000); }
   txQueue = xQueueCreate(16, sizeof(Packet)); 
-  xTaskCreatePinnedToCore(txTask, "ble_tx", 4096, nullptr, 1, nullptr, 0);
+  xTaskCreatePinnedToCore(txTask, "ble_tx", 8192, nullptr, 1, nullptr, 0);
   setupBle();
   showReady();
 }
