@@ -63,7 +63,7 @@ public final class LiftParameters {
         private double minRomM = 0.10;
         private double maxRomM = 1.20;
         private double repEndFraction = 0.15;
-        private double maxRepGyroDps = 100.0;
+        private double maxRepGyroDps = 175.0;
         private double cycleOffsetMaxS = 0.0;
 
         public Builder calibration(double windowS, double searchS) {
