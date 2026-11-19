@@ -50,7 +50,8 @@ public final class ContinuousRepAnalyzer {
                 continue;
             }
             double level = 0.0;
-            if(k > 0 && t[pk] - t[peaks[k - 1]] <= p.cycleOffsetMaxS){
+            if(k > 0 && t[pk] - t[peaks[k - 1]] <= p.cycleOffsetMaxS &&
+                !hasStillBetween(knots, t[peaks[k - 1]], t[pk])){
                 double sum = 0;
                 for(int i = peaks[k - 1]; i < pk; i++){
                     sum += v0[i];
@@ -105,6 +106,15 @@ public final class ContinuousRepAnalyzer {
         }
         return new Rep(0, t[l], t[r], rom / dur, peak,
                 gyroSum / (r - l), rom);
+    }
+
+    private static boolean hasStillBetween(List<double[]> knots, double from, double to){
+        for(double[] k : knots){
+            if(k[0] > from + KNOT_WINDOW_S && k[0] < to - KNOT_WINDOW_S){
+                return true;
+            }
+        }
+        return false;
     }
 
     static double[] driftBaseLine(double[] t, double[] net, double[] gyro, double[] raw, int n,
