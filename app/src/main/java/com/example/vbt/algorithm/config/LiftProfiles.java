@@ -16,12 +16,12 @@ public final class LiftProfiles {
             .repEndFraction(0.15).cycleOffsetMaxS(6.0).build();
 
     public static final LiftParameters SQUAT_CONTINUOUS = LiftParameters.builder()
-            .minPeakHeight(0.30).minRepDistanceS(1.5).minRepDurationS(0.6).rom(0.35, 0.80)
-            .repEndFraction(0.30).build();
+            .minPeakHeight(0.30).minRepDistanceS(1.5).minRepDurationS(0.35).rom(0.35, 0.80)
+            .repEndFraction(0.30).repSettleS(2.0).build();
 
     public static final LiftParameters DEADLIFT_CONTINUOUS = LiftParameters.builder()
-            .minPeakHeight(0.15).minRepDistanceS(1.5).minRepDurationS(0.6).rom(0.20,0.80)
-            .repEndFraction(0.30).build();
+            .minPeakHeight(0.15).minRepDistanceS(1.5).minRepDurationS(0.35).rom(0.20,0.80)
+            .repEndFraction(0.30).repSettleS(2.0).build();
     private LiftProfiles() {
     }
 

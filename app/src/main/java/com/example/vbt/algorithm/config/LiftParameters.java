@@ -20,7 +20,7 @@ public final class LiftParameters {
     public final double repEndFraction;
     public final double maxRepGyroDps;
     public final double cycleOffsetMaxS;
-
+    public final double repSettleS;
     private LiftParameters(Builder b) {
         this.calibrationWindowS = b.calibrationWindowS;
         this.calibrationSearchS = b.calibrationSearchS;
@@ -40,6 +40,7 @@ public final class LiftParameters {
         this.repEndFraction = b.repEndFraction;
         this.maxRepGyroDps = b.maxRepGyroDps;
         this.cycleOffsetMaxS = b.cycleOffsetMaxS;
+        this.repSettleS = b.repSettleS;
     }
 
     public static Builder builder() {
@@ -65,6 +66,7 @@ public final class LiftParameters {
         private double repEndFraction = 0.15;
         private double maxRepGyroDps = 175.0;
         private double cycleOffsetMaxS = 0.0;
+        private double repSettleS = 0.1;
 
         public Builder calibration(double windowS, double searchS) {
             this.calibrationWindowS = windowS;
@@ -121,6 +123,11 @@ public final class LiftParameters {
 
         public Builder cycleOffsetMaxS(double s){
             this.cycleOffsetMaxS = s;
+            return this;
+        }
+
+        public Builder repSettleS(double s){
+            this.repSettleS = s;
             return this;
         }
 

@@ -17,7 +17,6 @@ public final class ContinuousRepAnalyzer {
     static final double KNOT_GYRO_MEAN = 25.0;
     static final double SMOOTH_S = 0.15;
     static final double PEAK_WINDOW_S = 6.0;
-    static final double END_GUARD_S = 0.1;
 
     private ContinuousRepAnalyzer(){
 
@@ -59,7 +58,7 @@ public final class ContinuousRepAnalyzer {
                 level = sum / (pk - peaks[k - 1]);
             }
             Rep rep = summarize(t, v0, level, gyroMag, n, pk, p);
-            if(rep != null && t[n - 1] - rep.endS >= END_GUARD_S){
+            if(rep != null && t[n - 1] - rep.endS >= p.repSettleS){
                 reps.add(rep);
             }
         }
