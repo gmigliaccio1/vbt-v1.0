@@ -3,17 +3,17 @@ package com.example.vbt.algorithm.detection.continuous;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.example.vbt.algorithm.detection.realtime.RepListener;
 import com.example.vbt.algorithm.detection.realtime.StreamingRepDetectionStrategy;
 import com.example.vbt.algorithm.detection.realtime.StreamingStrategyFactory;
 import com.example.vbt.algorithm.model.ImuSample;
 import com.example.vbt.algorithm.model.Lift;
 import com.example.vbt.algorithm.model.Rep;
+
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ContinuousStrategyTest {
     private static final double G = 9.80665;

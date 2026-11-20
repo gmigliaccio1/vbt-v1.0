@@ -2,6 +2,7 @@ package com.example.vbt.ble;
 
 import static org.junit.Assert.assertEquals;
 
+import com.example.vbt.algorithm.model.ImuSample;
 
 import org.junit.Test;
 
@@ -9,8 +10,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.example.vbt.algorithm.model.ImuSample;
 
 public class SamplePacketParserTest {
 

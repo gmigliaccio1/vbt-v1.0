@@ -9,10 +9,6 @@ public final class GravityTracker {
         this.alpha = alpha;
     }
 
-    public boolean isInitialized(){
-        return g != null;
-    }
-
     public double update(double [] acc, double [] gyro, double dt){
         if(g == null){
             g = normalized(acc);

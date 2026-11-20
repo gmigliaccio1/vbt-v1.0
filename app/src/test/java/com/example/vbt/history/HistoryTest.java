@@ -3,6 +3,13 @@ package com.example.vbt.history;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.example.vbt.algorithm.history.SavedSet;
+import com.example.vbt.algorithm.history.SetFormat;
+import com.example.vbt.algorithm.history.SetHistoryStore;
+import com.example.vbt.algorithm.history.SetStats;
+import com.example.vbt.algorithm.model.Lift;
+import com.example.vbt.algorithm.model.Rep;
+
 import org.junit.Test;
 
 import java.io.File;
@@ -10,13 +17,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.example.vbt.algorithm.history.SavedSet;
-import com.example.vbt.algorithm.history.SetFormat;
-import com.example.vbt.algorithm.history.SetHistoryStore;
-import com.example.vbt.algorithm.history.SetStats;
-import com.example.vbt.algorithm.model.Lift;
-import com.example.vbt.algorithm.model.Rep;
 
 public class HistoryTest {
 

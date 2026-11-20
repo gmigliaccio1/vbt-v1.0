@@ -1,10 +1,19 @@
 package com.example.vbt.session;
 
 import android.content.Context;
-
-
 import android.os.Handler;
 import android.os.Looper;
+
+import com.example.vbt.algorithm.detection.realtime.RepListener;
+import com.example.vbt.algorithm.detection.realtime.StreamingRepDetectionStrategy;
+import com.example.vbt.algorithm.detection.realtime.StreamingStrategyFactory;
+import com.example.vbt.algorithm.history.SetStats;
+import com.example.vbt.algorithm.model.ImuSample;
+import com.example.vbt.algorithm.model.Lift;
+import com.example.vbt.algorithm.model.Rep;
+import com.example.vbt.ble.BleSensorClient;
+import com.example.vbt.ble.SamplePacketParser;
+import com.example.vbt.recording.CsvSampleLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,18 +24,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import com.example.vbt.algorithm.detection.realtime.RepListener;
-import com.example.vbt.algorithm.detection.realtime.StreamingRepDetectionStrategy;
-import com.example.vbt.algorithm.detection.realtime.StreamingStrategyFactory;
-import com.example.vbt.algorithm.model.ImuSample;
-import com.example.vbt.algorithm.model.Lift;
-import com.example.vbt.algorithm.model.QuietWindow;
-import com.example.vbt.algorithm.model.Rep;
-import com.example.vbt.algorithm.model.SetResult;
-import com.example.vbt.ble.BleSensorClient;
-import com.example.vbt.ble.SamplePacketParser;
-import com.example.vbt.recording.CsvSampleLogger;
 
 public final class TrackerSession implements BleSensorClient.Listener, RepListener {
 
@@ -165,8 +162,7 @@ public final class TrackerSession implements BleSensorClient.Listener, RepListen
     @Override
     public void onRep(final Rep rep) {
         setReps.add(rep);
-        final double loss = new SetResult(strategy.lift(), setReps, new ArrayList<QuietWindow>(), 0)
-                .velocityLossPercent();
+        final double loss = SetStats.lastLossPercent(setReps);
         main.post(new Runnable() {
             @Override
             public void run() {
