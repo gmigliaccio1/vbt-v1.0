@@ -21,6 +21,7 @@ public final class LiftParameters {
     public final double maxRepGyroDps;
     public final double cycleOffsetMaxS;
     public final double repSettleS;
+    public final boolean floorPulls;
     private LiftParameters(Builder b) {
         this.calibrationWindowS = b.calibrationWindowS;
         this.calibrationSearchS = b.calibrationSearchS;
@@ -41,6 +42,7 @@ public final class LiftParameters {
         this.maxRepGyroDps = b.maxRepGyroDps;
         this.cycleOffsetMaxS = b.cycleOffsetMaxS;
         this.repSettleS = b.repSettleS;
+        this.floorPulls = b.floorPulls;
     }
 
     public static Builder builder() {
@@ -67,7 +69,7 @@ public final class LiftParameters {
         private double maxRepGyroDps = 175.0;
         private double cycleOffsetMaxS = 0.0;
         private double repSettleS = 0.1;
-
+        private boolean floorPulls = false;
         public Builder calibration(double windowS, double searchS) {
             this.calibrationWindowS = windowS;
             this.calibrationSearchS = searchS;
@@ -128,6 +130,11 @@ public final class LiftParameters {
 
         public Builder repSettleS(double s){
             this.repSettleS = s;
+            return this;
+        }
+
+        public Builder floorPulls(boolean on){
+            this.floorPulls = on;
             return this;
         }
 

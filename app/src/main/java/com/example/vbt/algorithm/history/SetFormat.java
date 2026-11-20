@@ -29,8 +29,8 @@ public final class SetFormat {
         double[] loss = SetStats.lossPerRep(set.reps);
         for(int i = 0; i < set.reps.size(); i++){
             Rep r = set.reps.get(i);
-            sb.append(String.format(Locale.US, "Rep %d  mean %.2f m/s " +
-                            "peak %.2f m/s ROM %.0f cm  loss %.0f%%%n",
+            sb.append(String.format(Locale.US,
+                    "Rep %d  mean %.2f m/s peak %.2f m/s ROM %.0f cm  loss %.0f%%%n",
                     r.number, r.meanVelocity, r.peakVelocity, r.romM * 100, loss[i]));
         }
         return sb.toString();
