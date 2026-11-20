@@ -21,7 +21,7 @@ public final class LiftProfiles {
 
     public static final LiftParameters DEADLIFT_CONTINUOUS = LiftParameters.builder()
             .minPeakHeight(0.15).minRepDistanceS(1.5).minRepDurationS(0.35).rom(0.20,0.80)
-            .repEndFraction(0.30).repSettleS(2.0).build();
+            .repEndFraction(0.30).repSettleS(2.0).floorPulls(true).build();
     private LiftProfiles() {
     }
 

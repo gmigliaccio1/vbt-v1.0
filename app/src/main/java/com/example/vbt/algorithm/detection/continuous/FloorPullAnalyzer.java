@@ -1,13 +1,10 @@
 package com.example.vbt.algorithm.detection.continuous;
 
-import android.mtp.MtpConstants;
-
 import com.example.vbt.algorithm.config.LiftParameters;
 import com.example.vbt.algorithm.model.Rep;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public final class FloorPullAnalyzer {
@@ -49,7 +46,7 @@ public final class FloorPullAnalyzer {
             while(j < n && !shock[j]){
                 j++;
             }
-            if(j - 1 >= MIN_PIECE_S * fs){
+            if(j - i >= MIN_PIECE_S * fs){
                 analyzePiece(t, net, gyroMag, i, j, fs, p, afterPeakT, reps);
             }
             i = j;
@@ -88,10 +85,10 @@ public final class FloorPullAnalyzer {
             for(int i = searchFrom; i < mid; i++){
                 if(sm[i] > best){
                     best = sm[i];
-                    ia = 1;
+                    ia = i;
                 }
             }
-            if(ia > 0){
+            if(ia < 0){
                 return;
             }
             int low = searchFrom + (int) (REST_SKIP_S * fs);
@@ -116,7 +113,7 @@ public final class FloorPullAnalyzer {
             double acc = 0.0;
             for(int k = 0; k < len; k++){
                 double dt = 0.0;
-                if(st * k > 0){
+                if(st + k > 0){
                     dt = Math.min(Math.max(ts[st + k] - ts[st + k -1], 0.0),
                             ContinuousRepAnalyzer.MAX_DT);
                 }
@@ -154,7 +151,7 @@ public final class FloorPullAnalyzer {
             for(int k = l + 1; k <= r; k++){
                 rom += 0.5 * (v[k] + v[k - 1]) * (ts[st + k] - ts[st + k - 1]);
                 gyroSum += gs[st + k];
-                gyroMax = Math.max(gyroMax, gs[st + l]);
+                gyroMax = Math.max(gyroMax, gs[st + k]);
             }
             double dur = ts[st + r] - ts[st + l];
             boolean valid = dur >= p.minRepDurationS && rom >= p.minRomM && rom <= p.maxRomM
