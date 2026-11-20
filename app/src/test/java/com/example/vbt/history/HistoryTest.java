@@ -103,7 +103,7 @@ public class HistoryTest {
         assertEquals("10 Nov 10:15 - Bench Press - 130 kg - 2 reps - best 0.50 m/s - loss 20%",
                 SetFormat.summaryLine(set, "10 Nov 10:15"));
         String details = SetFormat.details(set);
-        assertTrue(details.contains("Rep 2   mean 0.40   peak 0.56 m/s   ROM 26 cm   loss 20%"));
+        assertTrue(details.contains("Rep 2  mean 0.40 m/s peak 0.56 m/s ROM 26 cm  loss 20%"));
         assertEquals("192.5 kg", SetFormat.summaryLine(
                 new SavedSet(1L, Lift.SQUAT, 192.5, reps(0.5)), "x").split(" - ")[2]);
     }
