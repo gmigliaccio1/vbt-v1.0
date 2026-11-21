@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
             saveSetIfAny(currentLift);
             clearSetDisplay();
             session.newSet();
+            session.mark("set lift=" + currentLift.name() + " kg=" + loadKg());
         });
 
         findViewById(R.id.btnHistory).setOnClickListener(

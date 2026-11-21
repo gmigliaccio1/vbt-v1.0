@@ -30,6 +30,9 @@ public final class CsvSetReader {
         int dropped = 0;
         String line;
         while((line = in.readLine()) != null){
+            if(line.startsWith("#")){
+                continue;
+            }
             String[] parts = line.trim().split(",", -1);
             if(parts.length != 7){
                 dropped++;

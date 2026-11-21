@@ -26,6 +26,10 @@ public final class CsvSampleLogger implements Closeable {
                 s.t, s.ax, s.ay, s.az, s.gx, s.gy, s.gz));
     }
 
+    public void mark(final String text) throws IOException{
+        out.write("# " + text + "\n");
+    }
+
     @Override
     public void close() throws IOException{
         out.close();

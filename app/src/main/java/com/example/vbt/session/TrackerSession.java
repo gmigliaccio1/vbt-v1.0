@@ -212,6 +212,21 @@ public final class TrackerSession implements BleSensorClient.Listener, RepListen
         }
     }
 
+    public void mark(final String text){
+        worker.execute(new Runnable() {
+            @Override
+            public void run() {
+                if(logger != null){
+                    try{
+                        logger.mark(text);
+                    }catch (IOException e){
+                        closeLogger();
+                    }
+                }
+            }
+        });
+    }
+
     private void closeLogger() {
         if (logger != null) {
             try {
