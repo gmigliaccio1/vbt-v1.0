@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
     private static final String PREF_LIFT = "lift";
     private static final String PREF_LOAD = "load";
     private static final String PREF_ALERT = "alert";
+    private static final String PREF_TAG = "tag";
     private static final int DEFAULT_ALERT_PERCENT = 20;
     private TrackerSession session;
     private SetHistoryStore history;
@@ -69,7 +70,8 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
     private MaterialCardView cardLast;
     private LinearLayout repsContainer;
     private RadioGroup liftGroup;
-    private TextInputEditText etLoad, etAlert;
+    private TextInputEditText etLoad, etAlert, etTag;
+
     private final ActivityResultLauncher<String[]> permissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
                     (Map<String, Boolean> result) -> {
@@ -109,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
         liftGroup = findViewById(R.id.liftGroup);
         etLoad = findViewById(R.id.etLoad);
         etAlert = findViewById(R.id.etAlert);
+        etTag = findViewById(R.id.etTag);
 
         history = HistoryStorage.open(this);
         restorePreferences();
@@ -121,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
             clearSetDisplay();
             currentLift = selectedLift();
             session.selectLift(currentLift);
+            session.mark("set lift=" + currentLift.name() + " kg=" + loadKg() + " tag=" + tag());
         });
 
         btnConnect.setOnClickListener(v -> {
@@ -216,12 +220,14 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
         }
         etLoad.setText(p.getString(PREF_LOAD, ""));
         etAlert.setText(String.valueOf(p.getInt(PREF_ALERT, DEFAULT_ALERT_PERCENT)));
+        etTag.setText(p.getString(PREF_TAG, ""));
     }
 
     private void savePreferences(){
         getSharedPreferences(PREFS, MODE_PRIVATE).edit()
                 .putString(PREF_LIFT, selectedLift().name())
                 .putString(PREF_LOAD, textOf(etLoad))
+                .putString(PREF_TAG, textOf(etTag))
                 .putInt(PREF_ALERT, alertPercent())
                 .apply();
     }
@@ -384,6 +390,10 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
         } catch (RuntimeException ignored) {
 
         }
+    }
+
+    private String tag(){
+        return textOf(etTag).replace(' ', '_');
     }
 
     private int dp(int value){

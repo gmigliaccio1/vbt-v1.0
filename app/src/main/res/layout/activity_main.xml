@@ -10,7 +10,6 @@
     android:padding="16dp"
     tools:context=".MainActivity">
 
-    <!-- connection, battery, connect button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -80,7 +79,6 @@
             android:text="@string/lift_deadlift" />
     </RadioGroup>
 
-    <!-- load and stop alert -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -119,9 +117,25 @@
                 android:inputType="number"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:hint="@string/hint_tag">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
-    <!-- last rep -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardLast"
         android:layout_width="match_parent"
@@ -170,7 +184,6 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- every rep of the set: scroll down to see them -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

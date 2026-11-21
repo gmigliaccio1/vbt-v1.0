@@ -24,9 +24,6 @@ public final class ContinuousRepAnalyzer {
 
     public static List<Rep> analyze(double [] t, double[] net, double[] gyroMag, int n,
                                     LiftParameters p, double afterPeakT){
-        if(p.floorPulls){
-            return FloorPullAnalyzer.analyze(t, net, gyroMag, n, p, afterPeakT);
-        }
         List<Rep> reps = new ArrayList<>();
         if(n < 20){
             return reps;

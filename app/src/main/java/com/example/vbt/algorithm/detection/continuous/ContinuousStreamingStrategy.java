@@ -17,10 +17,12 @@ public final class ContinuousStreamingStrategy implements StreamingRepDetectionS
     static final double WINDOW_S = 60.0;
     static final int ANALYZE_EVERY = 20;
     private static final double MAX_DT = 0.06;
+    private static final double G = 9.80665;
     private static final double MOVING_GYRO_DPS = 15.0;
     private static final double CALM_S = 1.0;
     private final Lift lift;
     private final LiftParameters params;
+    private final LiftAnalyzer analyzer;
     private RepListener listener = RepListener.NONE;
     private RepListener.Status status = RepListener.Status.CALIBRATING;
     private final ArrayDeque<ImuSample> calibWindow = new ArrayDeque<>();
@@ -34,6 +36,7 @@ public final class ContinuousStreamingStrategy implements StreamingRepDetectionS
     private double[] bt = new double[4096];
     private double[] bnet = new double[4096];
     private double[] bgyro = new double[4096];
+    private double[] bmag = new double[4096];
     private int bn;
     private int sinceAnalyze;
     private double lastPeakT = Double.NEGATIVE_INFINITY;
@@ -42,6 +45,7 @@ public final class ContinuousStreamingStrategy implements StreamingRepDetectionS
     public ContinuousStreamingStrategy(Lift lift){
         this.lift = lift;
         this.params = LiftProfiles.continuousForLift(lift);
+        this.analyzer = LiftAnalyzers.forLift(lift);
         reset();
     }
 
@@ -103,7 +107,7 @@ public final class ContinuousStreamingStrategy implements StreamingRepDetectionS
         double[] gyro = {s.gx - gyroBias[0], s.gy - gyroBias[1], s.gz - gyroBias[2]};
         double net = tracker.update(acc, gyro, dt);
         double gyroMag = GravityTracker.norm(gyro);
-        append(s.t, net, gyroMag);
+        append(s.t, net, GravityTracker.norm(acc) * G, gyroMag);
         if (gyroMag > MOVING_GYRO_DPS || Math.abs(GravityTracker.norm(acc) - 1.0) > 0.08){
             lastMotionT = s.t;
             setStatus(RepListener.Status.MOVING);
@@ -116,7 +120,7 @@ public final class ContinuousStreamingStrategy implements StreamingRepDetectionS
         }
     }
 
-    private void append(double t, double net, double gyroMag){
+    private void append(double t, double net, double mag, double gyroMag){
         if(bn == bt.length){
             if(t - bt[0] > WINDOW_S){
                 int cut = 0;
@@ -126,6 +130,7 @@ public final class ContinuousStreamingStrategy implements StreamingRepDetectionS
                 System.arraycopy(bt, cut, bt, 0, bn - cut);
                 System.arraycopy(bnet, cut, bnet, 0, bn - cut);
                 System.arraycopy(bgyro, cut, bgyro, 0, bn - cut);
+                System.arraycopy(bmag, cut, bmag, 0, bn - cut);
                 bn -= cut;
             }
             if(bn == bt.length){
@@ -133,11 +138,14 @@ public final class ContinuousStreamingStrategy implements StreamingRepDetectionS
                 bt = Arrays.copyOf(bt, cap);
                 bnet = Arrays.copyOf(bnet, cap);
                 bgyro = Arrays.copyOf(bgyro, cap);
+                bmag = Arrays.copyOf(bmag, cap);
             }
         }
         bt[bn] = t;
         bnet[bn] = net;
         bgyro[bn] = gyroMag;
+        bmag[bn] = mag;
+
         bn++;
     }
 
@@ -151,7 +159,8 @@ public final class ContinuousStreamingStrategy implements StreamingRepDetectionS
         double[] t = Arrays.copyOfRange(bt, from, bn);
         double[] net = Arrays.copyOfRange(bnet, from, bn);
         double[] gyro = Arrays.copyOfRange(bgyro, from, bn);
-        List<Rep> reps = ContinuousRepAnalyzer.analyze(t, net, gyro, n, params, lastPeakT);
+        double[] mag = Arrays.copyOfRange(bmag, from, bn);
+        List<Rep> reps = analyzer.analyze(new AnalysisSignal(t, net, mag, gyro, n), params, lastPeakT);
         for(Rep r : reps){
             if(r.startS < lastPeakT){
                 continue;
