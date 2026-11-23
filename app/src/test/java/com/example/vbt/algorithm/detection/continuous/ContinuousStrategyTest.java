@@ -9,6 +9,7 @@ import com.example.vbt.algorithm.detection.realtime.StreamingStrategyFactory;
 import com.example.vbt.algorithm.model.ImuSample;
 import com.example.vbt.algorithm.model.Lift;
 import com.example.vbt.algorithm.model.Rep;
+import com.example.vbt.algorithm.config.LiftProfiles;
 
 import org.junit.Test;
 
@@ -115,9 +116,10 @@ public class ContinuousStrategyTest {
         }, 0.0);
         List<Rep> reps = run(Lift.DEADLIFT, samples, new ArrayList<Double>());
         assertEquals(3, reps.size());
+        double gain = LiftProfiles.DEADLIFT_CONTINUOUS.velocityGain;
         for (Rep r : reps) {
-            assertEquals(0.51, r.romM, 0.08);
-            assertEquals(0.50, r.peakVelocity, 0.08);
+            assertEquals(0.51 * gain, r.romM, 0.08);
+            assertEquals(0.50 * gain, r.peakVelocity, 0.08);
         }
     }
 

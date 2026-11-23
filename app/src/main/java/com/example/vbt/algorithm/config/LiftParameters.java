@@ -15,6 +15,11 @@ public final class LiftParameters {
     public final double maxRepGyroDps;
     public final double cycleOffsetMaxS;
     public final double repSettleS;
+    public final double velocityGain;
+    public final double knotSmoothS;
+    public final double knotAccStd;
+    public final double knotWindowS;
+
     private LiftParameters(Builder b) {
         this.calibrationWindowS = b.calibrationWindowS;
         this.orientationAlpha = b.orientationAlpha;
@@ -29,6 +34,10 @@ public final class LiftParameters {
         this.maxRepGyroDps = b.maxRepGyroDps;
         this.cycleOffsetMaxS = b.cycleOffsetMaxS;
         this.repSettleS = b.repSettleS;
+        this.velocityGain = b.velocityGain;
+        this.knotSmoothS = b.knotSmoothS;
+        this.knotAccStd = b.knotAccStd;
+        this.knotWindowS = b.knotWindowS;
     }
 
     public static Builder builder() {
@@ -49,6 +58,10 @@ public final class LiftParameters {
         private double maxRepGyroDps = 175.0;
         private double cycleOffsetMaxS = 0.0;
         private double repSettleS = 0.1;
+        private double velocityGain = 1.0;
+        private double knotSmoothS = 0.0;
+        private double knotAccStd = 0.2;
+        private double knotWindowS = 0.6;
 
         public Builder orientationAlpha(double v) {
             this.orientationAlpha = v;
@@ -88,6 +101,18 @@ public final class LiftParameters {
 
         public Builder repSettleS(double s){
             this.repSettleS = s;
+            return this;
+        }
+
+        public Builder velocityGain(double g){
+            this.velocityGain = g;
+            return this;
+        }
+
+        public Builder knots(double smoothS, double accStd, double windowS){
+            this.knotSmoothS = smoothS;
+            this.knotAccStd = accStd;
+            this.knotWindowS = windowS;
             return this;
         }
 

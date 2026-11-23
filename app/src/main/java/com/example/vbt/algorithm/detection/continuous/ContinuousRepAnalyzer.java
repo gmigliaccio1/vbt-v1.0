@@ -12,7 +12,6 @@ import java.util.List;
 public final class ContinuousRepAnalyzer {
     static final double MAX_DT = 0.06;
     static final double KNOT_WINDOW_S = 0.6;
-    static final double KNOT_ACC_STD = 0.2;
     static final double KNOT_ACC_MEAN = 0.5;
     static final double KNOT_GYRO_MEAN = 25.0;
     static final double SMOOTH_S = 0.15;
@@ -35,7 +34,7 @@ public final class ContinuousRepAnalyzer {
         }
         double[] v0 = new double[n];
         List<double[]> knots = new ArrayList<>();
-        double[] base = driftBaseLine(t, net, gyroMag, raw, n, knots);
+        double[] base = driftBaseLine(t, net, gyroMag, raw, n, knots, p);
         for(int i = 0; i < n; i++){
             v0[i] = raw[i] - base[i];
         }
@@ -117,17 +116,22 @@ public final class ContinuousRepAnalyzer {
     }
 
     static double[] driftBaseLine(double[] t, double[] net, double[] gyro, double[] raw, int n,
-                                  List<double[]> knots){
+                                  List<double[]> knots, LiftParameters p){
+        double fsKnots = (n - 1) / (t[n - 1] - t[0]);
+        double [] calm = net;
+        if(p.knotSmoothS > 0){
+            calm = smooth(net, Math.max(3, (int) Math.round(p.knotSmoothS * fsKnots)));
+        }
         int i = 0;
         while(i < n){
             int j = i;
-            while(j < n && t[j] < t[i] + KNOT_WINDOW_S){
+            while(j < n && t[j] < t[i] + p.knotWindowS){
                 j++;
             }
             if(j >= n){
                 break;
             }
-            if(isStill(net, gyro, i, j)){
+            if(isStill(calm, gyro, i, j, p.knotAccStd)){
                 double m = 0;
                 for(int k = i; k < j; k++){
                     m += raw[k];
@@ -163,7 +167,7 @@ public final class ContinuousRepAnalyzer {
         return base;
     }
 
-    private static boolean isStill(double[] net, double[] gyro, int from, int to){
+    private static boolean isStill(double[] net, double[] gyro, int from, int to, double accStd){
         double m = 0;
         double g = 0;
         for(int i = from; i < to; i++){
@@ -177,7 +181,7 @@ public final class ContinuousRepAnalyzer {
         for(int i = from; i < to; i++){
             var += (net[i] - m) * (net[i] - m);
         }
-        return Math.sqrt(var / cnt) < KNOT_ACC_STD && Math.abs(m) < KNOT_ACC_MEAN
+        return Math.sqrt(var / cnt) < accStd && Math.abs(m) < KNOT_ACC_MEAN
                 && g < KNOT_GYRO_MEAN;
     }
 

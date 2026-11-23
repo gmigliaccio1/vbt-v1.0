@@ -121,6 +121,9 @@ public final class FloorPullAnalyzer {
                 v[k] = acc;
             }
             v = ContinuousRepAnalyzer.smooth(v, Math.max(3, (int) (V_SMOOTH_S * fs)));
+            for(int k = 0; k < len; k++){
+                v[k] *= p.velocityGain;
+            }
             int pk = 0;
             for(int k = 1; k < len; k++){
                 if(v[k] > v[pk]){
