@@ -200,6 +200,9 @@ void sampleOnce(){
   uint32_t now = micros();
   int32_t lateness = (int32_t)(now - nextTick);
   if(lateness < 0){
+    if(lateness < -1500){
+      delay(1);
+    }
     return;
   }
   if(lateness > (int32_t)(2*SAMPLE_PERIOD_US)){
@@ -278,6 +281,8 @@ void handleSerial() {
 void setup() {
   auto cfg = M5.config();
   M5.begin(cfg);
+  setCpuFrequencyMhz(80);
+  M5.Display.setBrightness(30);
   Serial.begin(115200);
   M5.Display.setTextSize(2);
 
