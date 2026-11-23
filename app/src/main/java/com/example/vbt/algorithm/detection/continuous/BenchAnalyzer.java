@@ -62,7 +62,7 @@ public final class BenchAnalyzer implements LiftAnalyzer{
     }
 
     private static double medianRom(List<Rep> a, List<Rep> b){
-        List<Rep> all = new ArrayList<>();
+        List<Rep> all = new ArrayList<>(a);
         all.addAll(b);
         if(all.isEmpty()){
             return 0.0;
