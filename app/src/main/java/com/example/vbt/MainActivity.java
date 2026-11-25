@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.os.VibratorManager;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -143,7 +144,16 @@ public class MainActivity extends AppCompatActivity implements TrackerSession.Li
             saveSetIfAny(currentLift);
             clearSetDisplay();
             session.newSet();
-            session.mark("set lift=" + currentLift.name() + " kg=" + loadKg());
+            String info;
+            if(tag().isEmpty()){
+                info = currentLift.name() + " " + loadKg() + " kg";
+            }else{
+                info = currentLift.name() + " " + loadKg() + " kg [" + tag() + "]";
+            }
+            session.mark("set lift=" + currentLift.name() + " kg=" + loadKg() + " tag=" + tag());
+            v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+            Toast.makeText(this, getString(R.string.new_set_started, info),
+                    Toast.LENGTH_SHORT).show();
         });
 
         findViewById(R.id.btnHistory).setOnClickListener(
