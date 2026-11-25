@@ -282,7 +282,7 @@ void setup() {
   auto cfg = M5.config();
   M5.begin(cfg);
   setCpuFrequencyMhz(80);
-  M5.Display.setBrightness(30);
+  M5.Display.setBrightness(0);
   Serial.begin(115200);
   M5.Display.setTextSize(2);
 
