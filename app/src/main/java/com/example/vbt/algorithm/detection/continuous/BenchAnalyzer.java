@@ -12,6 +12,8 @@ public final class BenchAnalyzer implements LiftAnalyzer{
 
     static final double MAX_PRESS_S = 3.0;
     static final double MIN_MEAN_TO_PEAK = 0.5;
+    static final double UNRACK_MAX_ROM_M = 0.14;
+    static final double UNRACK_MAX_MEAN_TO_PEAK = 0.60;
 
     @Override
     public List<Rep> analyze(AnalysisSignal s, LiftParameters p, double afterPeakT){
@@ -50,9 +52,12 @@ public final class BenchAnalyzer implements LiftAnalyzer{
     private static List<Rep> run(AnalysisSignal s, LiftParameters p, double afterPeakT){
         List<Rep> reps = new ArrayList<>();
         for(Rep r : ContinuousRepAnalyzer.analyze(s.t, s.net, s.gyro, s.n, p, afterPeakT)){
-            if(r.durationS() <= MAX_PRESS_S && r.meanVelocity >= MIN_MEAN_TO_PEAK * r.peakVelocity){
-                reps.add(r);
-            }
+           boolean unrack = r.romM < UNRACK_MAX_ROM_M
+                   && r.meanVelocity < UNRACK_MAX_MEAN_TO_PEAK * r.peakVelocity;
+           if(r.durationS() <= MAX_PRESS_S && r.meanVelocity >= MIN_MEAN_TO_PEAK * r.peakVelocity
+           && !unrack){
+               reps.add(r);
+           }
         }
         return reps;
     }
