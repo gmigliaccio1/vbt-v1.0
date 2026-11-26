@@ -12,7 +12,7 @@ public final class BenchAnalyzer implements LiftAnalyzer{
 
     static final double MAX_PRESS_S = 3.0;
     static final double MIN_MEAN_TO_PEAK = 0.5;
-    static final double UNRACK_MAX_ROM_M = 0.14;
+    static final double UNRACK_MAX_ROM_M = 0.17;
     static final double UNRACK_MAX_MEAN_TO_PEAK = 0.60;
 
     @Override
